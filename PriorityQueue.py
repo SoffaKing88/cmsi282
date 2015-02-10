@@ -25,19 +25,32 @@ class PriorityQueue:
 	def remove(self):
 		if not self.queue:
 			raise LookupError
+		if len(self) == 1:
+			self.queue.pop()
+			return self
 		self.queue[0] = self.queue.pop()
 		i = 0
-		for x in range (0, int(math.log(len(self), 2)) + 1):
-			if self.queue[i] > self.queue[i * 2] or self.queue[i] > self.queue[i * 2 + 1]:
-				if self.queue[i * 2] >= self.queue[i * 2 + 1]:
-					storeValue = self.queue[i * 2 + 1]
-					j = i * 2 + 1
-				elif self.queue[i * 2] < self.queue[i * 2 + 1]:
-					storeValue = self.queue[i * 2]
-					j = i * 2
+		height = int(math.floor(math.log(len(self), 2)))
+		for x in range (0, height):
+			if (i * 2) + 2 > len(self) - 1:
+				if self.queue[(i * 2) + 1] < self.queue[i]:
+					j = (i * 2) + 1
+					storeValue = self.queue[j]
+					self.queue[j] = self.queue[i]
+					self.queue[i] = self.queue[j]
+					i = j
+			elif self.queue[i] > self.queue[(i * 2) + 1] or self.queue[i] > self.queue[(i * 2) + 2]:
+				if self.queue[(i * 2) + 1] > self.queue[(i * 2) + 2]:
+					j = (i * 2) + 2
+					storeValue = self.queue[j]
+				elif self.queue[(i * 2) + 1] <= self.queue[(i * 2) + 2]:
+					j = (i * 2) + 1
+					storeValue = self.queue[j]
 				self.queue[j] = self.queue[i]
 				self.queue[i] = storeValue
 				i = j
+				if ((j * 2) + 2) >= len(self):
+					break
 		return self.queue
 
 	def peek(self):
@@ -48,14 +61,3 @@ class PriorityQueue:
 
 	def __str__(self):
 		return str(self.queue)
-
-q = PriorityQueue()
-q.add(8)
-q.add(5)
-q.add(4)
-q.add(48)
-q.add(2)
-q.add(17)
-q.add(28)
-q.remove()
-print(q.__str__())
